@@ -1,0 +1,24 @@
+name = "ThreeGapTheorem"
+version = "1.0.0"
+description = "A Lean 4 / Mathlib formalization of the three-gap (Steinhaus) theorem, uniform in the rotation number."
+keywords = ["math", "number-theory", "combinatorics", "lean4", "formalization", "three-gap-theorem", "steinhaus", "three-distance-theorem"]
+license = "MIT"
+defaultTargets = ["ThreeGap"]
+
+[leanOptions]
+pp.unicode.fun = true # pretty-prints `fun a ↦ b`
+relaxedAutoImplicit = false
+weak.linter.mathlibStandardSet = true
+maxSynthPendingDepth = 3
+# Silence cosmetic style linters whose only effect is formatting noise.
+linter.style.longLine = false
+linter.style.maxHeartbeats = false
+linter.style.induction = false
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "v4.29.1"
+
+[[lean_lib]]
+name = "ThreeGap"

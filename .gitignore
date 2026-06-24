@@ -1,0 +1,25 @@
+# Lean / Lake
+/.lake/
+*.olean
+*.ilean
+*.olean.tmp
+
+# LaTeX build artifacts
+*.aux
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.bbl
+*.blg
+*.nav
+*.snm
+*.vrb
+*.pdf
+
+# OS
+.DS_Store
