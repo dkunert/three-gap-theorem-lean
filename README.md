@@ -47,7 +47,11 @@ Rotation Number.* Build it with `latexmk -pdf three_gap_theorem_lean.tex`.
 ## Building
 
 Requires the [Lean 4 toolchain](https://leanprover-community.github.io/get_started.html)
-(`elan`); the version is pinned in `lean-toolchain`.
+(`elan`), which picks up the pinned versions automatically:
+
+- Lean: `leanprover/lean4:v4.29.1` (pinned in `lean-toolchain`).
+- Mathlib: `v4.29.1`, exact commit
+  `5e932f97dd25535344f80f9dd8da3aab83df0fe6` (pinned in `lake-manifest.json`).
 
 ```bash
 # fetch the prebuilt Mathlib cache (recommended; avoids recompiling Mathlib)
@@ -82,9 +86,11 @@ conventions) are studied in a companion project:
 
 The Lean formalization, the proof strategy, and a first draft of the companion
 paper were produced by Anthropic's Claude (Claude Opus 4.8) through the
-Claude Code agent, under the author's direction and coaching. The correctness
-of the results rests not on this provenance but on the Lean 4 kernel: anyone can
-rebuild the module and inspect the axiom list above.
+Claude Code agent, under the author's direction and coaching. The author has
+independently verified the mathematical content and accepts full responsibility
+for the results and any errors. The correctness of the results rests not on this
+provenance but on the Lean 4 kernel: anyone can rebuild the module and inspect
+the axiom list above.
 
 ## License
 
