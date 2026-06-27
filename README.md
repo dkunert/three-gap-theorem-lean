@@ -67,7 +67,7 @@ To inspect the trust base yourself, add to the end of `ThreeGap.lean`:
 and there is no `sorry` in the file:
 
 ```bash
-grep -c 'sorry' ThreeGap.lean   # 1 match — the word inside a doc-comment only
+grep -c 'sorry' ThreeGap.lean   # 2 matches — both inside comments only
 ```
 
 ## Companion work

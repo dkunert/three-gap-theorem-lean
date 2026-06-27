@@ -59,8 +59,8 @@ Mathlib, first-return map, fractional parts, gap sequences, rotation}
 
 \begin{abstract}
 We present a Lean~4 / Mathlib formalization of the three-gap (Steinhaus)
-theorem: for every real number~$a$ and every $N\in\N$, the $N$ points
-$\{ia \bmod 1 : 0 \le i < N\}$ partition the half-open interval $[0,1)$ into
+theorem: for every real number~$a$ and every $N\in\N$, the point set
+$\{ia \bmod 1 : 0 \le i < N\}$ partitions the half-open interval $[0,1)$ into
 gaps taking at most three distinct lengths, and when there are exactly three
 the largest is the sum of the other two.  The formalization follows the
 first-return (Slater--van Ravenstein) route, working throughout in $[0,1)$
@@ -682,28 +682,28 @@ their Lean names and line numbers in \code{ThreeGap.lean}.
 \hline
 Paper & Lean declaration & line\\
 \hline
-Orbit $\orb(a,N)$, count $k$        & \code{orbit}, \code{orbitCard}            & 53, 72\\
-Sorted points $x_i$                 & \code{sortedVal}                          & 84\\
-Gap multiset; $\code{gapAt}$        & \code{gaps}, \code{gapAt}                 & 95, 157\\
-Gaps sum to $1$ (Lem.~\ref{lem:sum-one}) & \code{gaps\_sum\_eq\_one}            & 105\\
-Reduction (Lem.~\ref{lem:reduction})& \code{three\_gap\_card\_le\_three\_of\_subset} & 189\\
-Returns $\etap,\etam$ (Def.~\ref{def:returns}) & \code{etaPos}, \code{etaNeg}   & 246, 251\\
-Return minimality (Lem.~\ref{lem:return-min}) & \code{no\_orbit\_below\_etaPos}, & 273,\\
-                                    & \quad\code{le\_one\_sub\_etaNeg}          & 291\\
-Canonical index                     & \code{canMul}                             & 474\\
-Return indices $\mpl,\mmi$          & \code{mPlus}, \code{mMinus}               & 578, 770\\
-Shift identity (Lem.~\ref{lem:shift})& \code{fract\_index\_shift}               & 650\\
-No point between (Lem.~\ref{lem:npb})& \code{noPointBetween}, \code{noPointBetween\_neg} & 697, 810\\
-Case A (Prop.~\ref{prop:caseA})     & \code{gap\_eq\_etaPos}                     & 735\\
-Case B (Prop.~\ref{prop:caseB})     & \code{gap\_eq\_etaNeg}                     & 852\\
-Discriminant (Lem.~\ref{lem:hP1})   & \code{corner\_canMul\_lt\_mMinus}         & 1103\\
-Returns preserved (Lem.~\ref{lem:returns-preserved}) & \code{etaPos\_eq\_extend}, & 1058,\\
-                                    & \quad\code{etaNeg\_eq\_extend}            & 1075\\
-L1, L3 (Lem.~\ref{lem:L1L3})        & \code{corner\_noPoint\_lo}, \code{corner\_noPoint\_hi} & 1174, 1224\\
-Corner gap; L2 (Prop.~\ref{prop:corner}, Thm.~\ref{thm:L2}) & \code{corner\_gap} & 1271\\
-Classification                      & \code{neighbour\_gap\_in\_returns}        & 1427\\
-Main theorem (Thm.~\ref{thm:main})  & \code{three\_gap\_card\_le\_three}        & 1460\\
-Sum relation (\S\ref{subsec:example} text) & \code{three\_gap\_lengths\_eq}     & 1474\\
+Orbit $\orb(a,N)$, count $k$        & \code{orbit}, \code{orbitCard}            & 54, 73\\
+Sorted points $x_i$                 & \code{sortedVal}                          & 85\\
+Gap multiset; $\code{gapAt}$        & \code{gaps}, \code{gapAt}                 & 96, 158\\
+Gaps sum to $1$ (Lem.~\ref{lem:sum-one}) & \code{gaps\_sum\_eq\_one}            & 106\\
+Reduction (Lem.~\ref{lem:reduction})& \code{three\_gap\_card\_le\_three\_of\_subset} & 190\\
+Returns $\etap,\etam$ (Def.~\ref{def:returns}) & \code{etaPos}, \code{etaNeg}   & 247, 252\\
+Return minimality (Lem.~\ref{lem:return-min}) & \code{no\_orbit\_below\_etaPos}, & 274,\\
+                                    & \quad\code{le\_one\_sub\_etaNeg}          & 292\\
+Canonical index                     & \code{canMul}                             & 475\\
+Return indices $\mpl,\mmi$          & \code{mPlus}, \code{mMinus}               & 579, 771\\
+Shift identity (Lem.~\ref{lem:shift})& \code{fract\_index\_shift}               & 651\\
+No point between (Lem.~\ref{lem:npb})& \code{noPointBetween}, \code{noPointBetween\_neg} & 698, 811\\
+Case A (Prop.~\ref{prop:caseA})     & \code{gap\_eq\_etaPos}                     & 736\\
+Case B (Prop.~\ref{prop:caseB})     & \code{gap\_eq\_etaNeg}                     & 853\\
+Discriminant (Lem.~\ref{lem:hP1})   & \code{corner\_canMul\_lt\_mMinus}         & 1104\\
+Returns preserved (Lem.~\ref{lem:returns-preserved}) & \code{etaPos\_eq\_extend}, & 1059,\\
+                                    & \quad\code{etaNeg\_eq\_extend}            & 1076\\
+L1, L3 (Lem.~\ref{lem:L1L3})        & \code{corner\_noPoint\_lo}, \code{corner\_noPoint\_hi} & 1175, 1225\\
+Corner gap; L2 (Prop.~\ref{prop:corner}, Thm.~\ref{thm:L2}) & \code{corner\_gap} & 1272\\
+Classification                      & \code{neighbour\_gap\_in\_returns}        & 1428\\
+Main theorem (Thm.~\ref{thm:main})  & \code{three\_gap\_card\_le\_three}        & 1461\\
+Sum relation (\S\ref{subsec:example} text) & \code{three\_gap\_lengths\_eq}     & 1475\\
 \hline
 \end{tabular}
 \caption{Correspondence between the paper and \code{ThreeGap.lean}.}
@@ -788,8 +788,8 @@ its period---under both the multiset and set conventions---are the subject of a
 companion paper~\cite{Kunert2025}.  The three-gap theorem bounds the number of
 distinct gap \emph{lengths} appearing in a single window; the companion work
 quantifies how the gap \emph{sequence} repeats.  The two are complementary
-slices of the same elementary geometry, and both are formalized in the same
-repository.
+slices of the same elementary geometry, each formalized in its own public
+repository (\cite{Kunert2025}, \cite{KunertThreeGap2026}).
 
 \emph{Further directions.}  The dynamical proofs point to higher-dimensional
 Steinhaus and Slater problems, where the number of gap lengths is governed by
@@ -833,8 +833,8 @@ arXiv:\href{https://arxiv.org/abs/2308.11999}{2308.11999}.
 
 \bibitem{Kunert2025}
 Dirk Kunert,
-\emph{Repository cut-and-project}, 2025.\newline
-Available at: \url{https://github.com/dkunert/cut-and-project}.
+\emph{Repository cut-and-project}, version \texttt{v1.4-arxiv}, 2025.\newline
+Available at: \url{https://github.com/dkunert/cut-and-project/tree/v1.4-arxiv}.
 
 \bibitem{KunertThreeGap2026}
 Dirk Kunert,
