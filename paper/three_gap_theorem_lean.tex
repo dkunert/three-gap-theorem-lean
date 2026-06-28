@@ -71,8 +71,9 @@ proof---Mayero's Coq development after van Ravenstein---is restricted to
 irrational~$a$.  The geometric crux, that the longest gap contains no orbit
 point, is discharged in the corner case by a self-contained
 return-time/period argument: were a point to sit inside the gap, the two
-indices realizing it would differ by a period bounded strictly between the two
-return times, contradicting their minimality.  This removes the irrationality
+indices realizing it would differ by a period strictly greater than the
+positive return time and strictly less than the sum of the two return times,
+contradicting their minimality.  This removes the irrationality
 hypothesis of the van Ravenstein--Mayero line.  Both the distinct-count bound
 \code{three\_gap\_card\_le\_three} and the sum relation
 \code{three\_gap\_lengths\_eq} are proved with no \code{sorry}, depending only on
@@ -147,8 +148,8 @@ irrational, so that distinct indices always give distinct points; the rational
 case, where the orbit is periodic and indices collide, is set aside.  We close
 the corner case for all~$a$ at once.  The collision of two indices on the same
 orbit point is exactly a \emph{period} of the rotation, and we show that in the
-corner such a period would lie strictly between the two return indices,
-contradicting their minimality.  For irrational~$a$ no nonzero period exists and
+corner such a period would lie strictly between the positive return index and
+the sum of the two return indices, contradicting their minimality.  For irrational~$a$ no nonzero period exists and
 the argument specializes to the classical situation; for rational~$a$ it
 supplies precisely the step that the van Ravenstein--Mayero line omits.
 
@@ -509,7 +510,7 @@ fractional part:
 \]
 (The bounds are $d>\mpl$ from $k<j$, and $d\le j+\mpl<\mpl+\mmi$ from
 Lemma~\ref{lem:hP1}.)  Thus $d$ is a \emph{period} of the rotation lying
-strictly between the two return indices.  We derive a contradiction from the
+strictly between $\mpl$ and $\mpl+\mmi$.  We derive a contradiction from the
 minimality of $\mmi$ or of $\mpl$.
 
 Since $d>\mpl$, the index $d-\mpl\in(0,\mmi)$ has
@@ -535,7 +536,7 @@ force $a=(\text{integer})/d\in\Q$.  So the case $k<j$ is vacuous, and L2 reduces
 to the elementary case~$k\ge j$---this is the situation treated by van
 Ravenstein and formalized by Mayero.  For rational $a$ the period is genuine,
 and the bound $\mpl<d<\mpl+\mmi$ is precisely what rules it out: the minimal
-period of the orbit exceeds $\mpl+\mmi$ in the corner, so no period can sit in
+period of the orbit is at least $\mpl+\mmi$ in the corner, so no period can sit in
 that window.  The single argument above covers both regimes, which is what lets
 the Lean proof avoid any rational/irrational case split.
 \end{remark}

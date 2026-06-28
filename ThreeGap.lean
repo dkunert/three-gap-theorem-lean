@@ -198,8 +198,8 @@ The *positive return* `η⁺` is the smallest **positive** orbit point; the *neg
 return* `η⁻` is `1 - max(orbit)`.  We package the positive orbit points as
 `posOrbit a N := (orbit a N).erase 0`.  Everything below is proved unconditionally
 (no surjectivity of the sorted enumeration is needed); the genuinely combinatorial
-crux and the lemmas that depend on the enumeration-onto bridge are isolated in the
-`cruxAttempt` block. -/
+crux and the lemmas that depend on the enumeration-onto bridge are organized in the
+Phase 2 core sections below. -/
 
 /-- The **positive orbit points** `(orbit a N) \ {0}`.  Each lies in `(0,1)`. -/
 noncomputable def posOrbit (a : ℝ) (N : ℕ) : Finset ℝ := (orbit a N).erase 0
