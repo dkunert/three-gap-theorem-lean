@@ -6,6 +6,13 @@
 \usepackage[a4paper,margin=1in]{geometry}
 \usepackage{caption}
 \captionsetup[table]{position=below,skip=12pt}
+\hypersetup{
+  pdftitle={A Lean 4 Formalization of the Three-Gap (Steinhaus) Theorem,
+    Uniform in the Rotation Number},
+  pdfauthor={Dirk Kunert},
+  pdfkeywords={three-gap theorem, three-distance theorem, Steinhaus conjecture,
+    Lean 4 formalization, Mathlib, machine-checked proof},
+}
 
 % Tolerate long, unbreakable \texttt{...} Lean identifiers without
 % producing visible right-margin overruns.
@@ -69,14 +76,16 @@ the first formalization of the theorem in Lean~4, and the first in any system
 to treat rational and irrational~$a$ uniformly: the only previous formal
 proof---Mayero's Coq development after van Ravenstein---is restricted to
 irrational~$a$.  The geometric crux, that the longest gap contains no orbit
-point, is discharged in the corner case by a self-contained
-return-time/period argument: were a point to sit inside the gap, the two
+point, is discharged in the corner case by interval arguments together with a
+self-contained return-index/period argument for the critical midpoint: were
+the midpoint an orbit point, the two
 indices realizing it would differ by a period strictly greater than the
-positive return time and strictly less than the sum of the two return times,
+positive return index and strictly less than the sum of the two return indices,
 contradicting their minimality.  This removes the irrationality
 hypothesis of the van Ravenstein--Mayero line.  Both the distinct-count bound
-\code{three\_gap\_card\_le\_three} and the sum relation
-\code{three\_gap\_lengths\_eq} are proved with no \code{sorry}, depending only on
+\code{three\_gap\_card\_le\_three} and the three-values identification
+\code{three\_gap\_lengths\_eq} (which yields the sum relation) are proved with
+no \code{sorry}, depending only on
 the axioms \code{propext}, \code{Classical.choice}, \code{Quot.sound}; the
 development is about $1{,}480$ lines.  We do \emph{not} claim a new proof
 of the theorem: elementary proofs valid for all~$a$ are classical---for
@@ -104,7 +113,7 @@ S\'os~\cite{Sos1958}, Sur\'anyi~\cite{Suranyi1958}, and
 three distinct lengths, and that whenever there are exactly three, the longest
 is the sum of the other two.  The result, also known as the three-distance
 theorem, has since accumulated many proofs and a large literature
-(see~\cite{BertheReutenauer2024} for a recent survey); we recall the proof
+(see~\cite{BertheReutenauer2024} for a recent account); we recall the proof
 landscape in Section~\ref{sec:related}.
 
 The present paper concerns not a new proof but a \emph{machine-checked} one.
@@ -128,7 +137,7 @@ source is a single self-contained module of roughly $1{,}480$ lines.
 Our formalization follows the \emph{first-return} viewpoint of
 Slater~\cite{Slater1967} and van Ravenstein~\cite{vanRavenstein1988}.  Two
 distinguished orbit points govern the gap structure: the smallest positive
-point $\etap$ (the \emph{positive return}) and $\etam = 1 - \max$, the gap from
+point $\etap$ (the \emph{positive return}) and $\etam$, the gap from
 the largest point up to~$1$ (the \emph{negative return}).  Each point's
 right neighbour is obtained either by adding the index of~$\etap$ or by
 subtracting the index of~$\etam$, according to a purely arithmetic condition on
@@ -162,7 +171,7 @@ claim a new proof of the theorem itself.  Elementary proofs valid for
 all~$a$ have long been available: Liang's $1979$ ``rigid gap''
 argument~\cite{Liang1979}, for instance, is uniform and self-contained.  We
 survey the proof landscape, including the dynamical and geometric proofs, in
-Section~\ref{sec:related}.  The minimality of the two return times is, moreover,
+Section~\ref{sec:related}.  The minimality of the two returns is, moreover,
 the engine of every proof in the first-return family.  Our contribution is the
 formalization, and the particular packaging of the corner step---through a
 period/minimality contradiction---that makes the first-return route uniform and
@@ -210,8 +219,8 @@ a}=0$, the point $0$ lies in every nonempty orbit.
 The points of $\orb(a,N)$, listed in increasing order, are denoted
 $x_0 < x_1 < \dots < x_{k-1}$.  In Lean this enumeration is
 \code{sortedVal a N}, a total function $\N\to\R$ defined from Mathlib's
-order isomorphism \code{Finset.orderEmbOfFin} on the first $k$ indices (and set
-to a junk value $0$ beyond, which never matters).  We write
+order embedding \code{Finset.orderEmbOfFin} on the first $k$ indices (and set
+to a junk value $0$ beyond).  We write
 $x_i = \code{sortedVal a N i}$.  It is strictly increasing on $0,\dots,k-1$
 (\code{sortedVal\_strictMono}), with $x_0 = 0$
 (\code{sortedVal\_zero\_eq\_zero}) and $x_{k-1} = \max\orb(a,N)$
@@ -231,6 +240,12 @@ the $k-1$ consecutive differences together with the single \emph{wrap-around}
 gap from the largest point up across $1$ to the smallest.  The $i$-th internal
 gap is $\code{gapAt a N i} = x_{i+1}-x_i$.
 \end{definition}
+
+For the empty orbit ($N=0$, so $k=0$) the description above does not apply;
+there the Lean definition degenerates, via the total-function convention for
+\code{sortedVal}, to the junk singleton multiset $\{1\}$, and all statements
+below hold trivially.  This is the only place the junk value of
+\code{sortedVal} surfaces.
 
 \begin{lemma}[\code{gaps\_sum\_eq\_one}]\label{lem:sum-one}
 If $N>0$ then the entries of $\mathrm{gaps}(a,N)$ sum to~$1$.
@@ -285,14 +300,14 @@ The number of \emph{distinct} gap lengths is the cardinality of the underlying
 set $\mathrm{gaps}(a,N).\code{toFinset}$.  The entire proof is organized around
 a single reduction.
 
-\begin{lemma}[\code{three\_gap\_card\_le\_three\_of\_subset}]\label{lem:reduction}
+\begin{lemma}[Reduction, \code{three\_gap\_card\_le\_three\_of\_subset}]\label{lem:reduction}
 If there exist reals $x,y,z$ with
 $\mathrm{gaps}(a,N).\code{toFinset} \subseteq \{x,y,z\}$, then
 $\mathrm{gaps}(a,N).\code{toFinset}$ has at most three elements.
 \end{lemma}
 
 Thus Theorem~\ref{thm:main} reduces to showing that \emph{every} gap value lies
-in the three-element set $\{\etap,\,\etam,\,\etap+\etam\}$.  The degenerate
+in the set $\{\etap,\,\etam,\,\etap+\etam\}$ (of at most three elements).  The degenerate
 orbits are immediate: if $k\le 1$ there is a single gap
 (\code{gaps\_card\_eq\_one\_of\_degenerate}), so from now on we assume $k\ge 2$.
 The wrap-around gap equals $\etam$ (\code{wraparound\_eq\_etaNeg}, since
@@ -312,8 +327,8 @@ points around the circle.
 
 \begin{definition}[\code{canMul}, \code{mPlus}, \code{mMinus}]
 For $p\in\orb(a,N)$, the \emph{canonical multiplier} $\code{canMul a N p}$ is the
-least index $k<N$ with $\fract{k\,a}=p$ (the minimum of the nonempty
-\emph{fibre} $\{k<N : \fract{k a}=p\}$).  The \emph{return indices} are the
+least index $\ell<N$ with $\fract{\ell\,a}=p$ (the minimum of the nonempty
+\emph{fibre} $\{\ell<N : \fract{\ell a}=p\}$).  The \emph{return indices} are the
 canonical multipliers of the two returns:
 \[
   \mpl = \code{mPlus a N} = \code{canMul a N}\,\etap,
@@ -372,11 +387,13 @@ If $j+\mpl<N$ then $\code{gapAt a N i}=\etap$.
 \end{proposition}
 
 \begin{proof}[Proof idea]
-By Lemma~\ref{lem:shift} (no wrap, using \code{fract\_add\_etaPos\_le\_one}) the
-point $v+\etap=\fract{(j+\mpl)a}$ is an orbit point, and $v<v+\etap<1$.  By
-Lemma~\ref{lem:npb} nothing lies in $(v,v+\etap)$, and by
-\code{no\_orbit\_strictly\_between} nothing lies in $(v,v')$; since $v+\etap$ is
-an orbit point above $v$, the two facts force $v'=v+\etap$.
+By Lemma~\ref{lem:npb} nothing lies in $(v,v+\etap)$, so in particular
+$v+\etap\le v'$; since $v'<1$, this gives $v+\etap<1$ strictly.  (The lemma
+\code{fract\_add\_etaPos\_le\_one} yields only $v+\etap\le 1$, and equality is
+attained in general; the strict bound comes from the successor $v'$.)  By
+Lemma~\ref{lem:shift} (no wrap) the point $v+\etap=\fract{(j+\mpl)a}$ is then an
+orbit point above $v$, and by \code{no\_orbit\_strictly\_between} nothing lies
+in $(v,v')$; the two facts force $v'=v+\etap$.
 \end{proof}
 
 \begin{proposition}[Case B, \code{gap\_eq\_etaNeg}]\label{prop:caseB}
@@ -438,7 +455,7 @@ the \emph{lower bound}: no orbit point lies in the open interval $(v,q)$.
 
 Granting it, the corner proposition follows quickly.  The lower bound gives
 $v'\ge q$, since $v'$ is the least orbit point above $v$; hence
-$v+\etap+\etam=v'<1$, so $q<1$.  Only now is $q$ realized without wrap:
+$q\le v'<1$, so $q<1$.  Only now is $q$ realized without wrap:
 $q=\fract{(j+\mpl-\mmi)a}$, with index $j+\mpl-\mmi<N$ because $j<\mmi$ and
 $\mpl<N$ give $j+\mpl<\mmi+N$.  Thus $q\in\orb(a,N)$, and as $q>v$ with nothing
 strictly between $v$ and $v'$ we get the \emph{upper bound} $v'\le q$.  Together,
@@ -464,18 +481,26 @@ $\code{etaPos a M}=\etap$ and $\code{etaNeg a M}=\etam$.
 \end{lemma}
 
 \begin{proof}[Proof idea]
-No new index $k\in[N,M)$ can produce a point in $(0,\etap)$ or in
-$(1-\etam,1)$: such a $k$ would, after subtracting $\mmi$ resp.\ $\mpl$, yield a
-point forcing $\mpl\le k-\mmi$ or $\mmi\le k-\mpl$, i.e.\ $k\ge\mpl+\mmi=M$,
-contrary to $k<M$ (\code{no\_new\_below\_etaPos}, \code{no\_new\_above\_etaNeg}).
-Hence the minimum positive point and the maximum are the same in $\orb(a,M)$ as
-in $\orb(a,N)$.
+No new index $w\in[N,M)$ can produce a point $s=\fract{w a}$ in $(0,\etap)$:
+subtracting each return index in turn puts two \emph{old} orbit points around
+$s$---the index $w-\mmi<\mpl\le N$ realizes $s+\etam$, so minimality gives
+$\etap\le s+\etam$, and the index $w-\mpl<\mmi\le N$ realizes $1-(\etap-s)$ in
+the top band, so $\etam\le\etap-s$.  Together these squeeze $s+\etam=\etap$
+exactly; but then $w-\mmi$ realizes $\etap$, so by canonicity $\mpl\le w-\mmi$,
+i.e.\ $w\ge\mpl+\mmi=M$, contrary to $w<M$ (\code{no\_new\_below\_etaPos}).
+The top band $(1-\etam,1)$ is excluded by the mirror argument
+(\code{no\_new\_above\_etaNeg}).  Hence the minimum positive point and the
+maximum are the same in $\orb(a,M)$ as in $\orb(a,N)$.
 \end{proof}
 
 Because $j+\mpl<M$, the forward ``no point between'' lemma now \emph{does} apply
-in $\orb(a,M)$, and dually for the backward one at $q$.  This yields the two
-empty-interval halves, stated for the original orbit since
-$\orb(a,N)\subseteq\orb(a,M)$.
+at $v$ inside $\orb(a,M)$, giving L1.  For L3 the same in-range realization
+$v+\etap=\fract{(j+\mpl)a}$ in $\orb(a,M)$ is used directly: an orbit point in
+$(v+\etap,\,q)$ would, via the difference of its index and $j+\mpl$, place a
+point of $\orb(a,M)$ in the top band $(1-\etam,1)$, contradicting return
+minimality there (the returns of $\orb(a,M)$ coincide with $\etap,\etam$ by
+Lemma~\ref{lem:returns-preserved}).  Both conclusions are stated for the
+original orbit since $\orb(a,N)\subseteq\orb(a,M)$.
 
 \begin{lemma}[\code{corner\_noPoint\_lo}, \code{corner\_noPoint\_hi}]
 \label{lem:L1L3}
@@ -494,21 +519,21 @@ In the corner case, $v+\etap\notin\orb(a,N)$.
 \end{theorem}
 
 \begin{proof}
-Suppose $v+\etap=\fract{k\,a}$ with $k<N$.  Recall
+Suppose $v+\etap=\fract{w\,a}$ with $w<N$.  Recall
 $v+\etap=\fract{(j+\mpl)a}$, with $j+\mpl\ge N$ by the corner condition.
 
-\emph{Case $k\ge j$.}  Then $\fract{(k-j)a}=\fract{k a}-\fract{j a}=\etap$ is an
-orbit point realizing $\etap$ at index $k-j<N$, so by minimality of $\mpl$ we
-have $\mpl\le k-j$, i.e.\ $k\ge j+\mpl\ge N$---contradicting $k<N$.  (This is
+\emph{Case $w\ge j$.}  Then $\fract{(w-j)a}=\fract{w a}-\fract{j a}=\etap$ is an
+orbit point realizing $\etap$ at index $w-j<N$, so by minimality of $\mpl$ we
+have $\mpl\le w-j$, i.e.\ $w\ge j+\mpl\ge N$---contradicting $w<N$.  (This is
 exactly where the corner condition $j+\mpl\ge N$ is used.)
 
-\emph{Case $k<j$.}  Now $\fract{k a}=v+\etap=\fract{(j+\mpl)a}$ with
-$k\ne j+\mpl$, so their difference is an integer multiple of~$a$ with vanishing
+\emph{Case $w<j$.}  Now $\fract{w a}=v+\etap=\fract{(j+\mpl)a}$ with
+$w\ne j+\mpl$, so their difference is an integer multiple of~$a$ with vanishing
 fractional part:
 \[
-  d := j+\mpl-k, \qquad \fract{d\,a}=0, \qquad \mpl<d<\mpl+\mmi .
+  d := j+\mpl-w, \qquad \fract{d\,a}=0, \qquad \mpl<d<\mpl+\mmi .
 \]
-(The bounds are $d>\mpl$ from $k<j$, and $d\le j+\mpl<\mpl+\mmi$ from
+(The bounds are $d>\mpl$ from $w<j$, and $d\le j+\mpl<\mpl+\mmi$ from
 Lemma~\ref{lem:hP1}.)  Thus $d$ is a \emph{period} of the rotation lying
 strictly between $\mpl$ and $\mpl+\mmi$.  We derive a contradiction from the
 minimality of $\mmi$ or of $\mpl$.
@@ -527,18 +552,21 @@ $\etap$ (Lemma~\ref{lem:return-min}, which gives $\etap\le\etam$) we get
 $\etap=\etam$; so $\etap$ itself occurs at index $d-\mmi<\mpl=\code{canMul a
 N}\,\etap$, again contradicting minimality.
 \end{itemize}
-Either way the case $k<j$ is impossible, and $v+\etap\notin\orb(a,N)$.
+Either way the case $w<j$ is impossible, and $v+\etap\notin\orb(a,N)$.
 \end{proof}
 
 \begin{remark}[Why this is uniform in $a$]\label{rmk:uniform}
 For irrational $a$ no nonzero period exists: $\fract{d a}=0$ with $d\ge1$ would
-force $a=(\text{integer})/d\in\Q$.  So the case $k<j$ is vacuous, and L2 reduces
-to the elementary case~$k\ge j$---this is the situation treated by van
+force $a=(\text{integer})/d\in\Q$.  So the case $w<j$ is vacuous, and L2 reduces
+to the elementary case~$w\ge j$---this is the situation treated by van
 Ravenstein and formalized by Mayero.  For rational $a$ the period is genuine,
-and the bound $\mpl<d<\mpl+\mmi$ is precisely what rules it out: the minimal
-period of the orbit is at least $\mpl+\mmi$ in the corner, so no period can sit in
-that window.  The single argument above covers both regimes, which is what lets
-the Lean proof avoid any rational/irrational case split.
+and the bound $\mpl<d<\mpl+\mmi$ is precisely what rules it out: the argument
+shows that no period of the rotation lies in the open window $(\mpl,\mpl+\mmi)$,
+which is exactly what the collision would require.  The single argument above
+covers both regimes, which is what lets the Lean proof avoid any
+rational/irrational case split; and it proceeds without induction---no descent
+along continued fractions is needed, which is what the title of this
+subsection refers to.
 \end{remark}
 
 Combining L1, L3, and Theorem~\ref{thm:L2}: any orbit point in $(v,q)$ would lie
@@ -546,7 +574,7 @@ in $(v,v+\etap)$, equal $v+\etap$, or lie in $(v+\etap,q)$, all impossible.
 Hence $v'\ge q$, which with the upper bound gives $v'=q=v+\etap+\etam$ and proves
 Proposition~\ref{prop:corner}.
 
-\subsection{Assembling the theorem}
+\subsection{Assembling the theorem}\label{subsec:assemble}
 
 Propositions~\ref{prop:caseA}, \ref{prop:caseB}, and~\ref{prop:corner} together
 classify every internal gap: \code{neighbour\_gap\_in\_returns} states that
@@ -588,6 +616,7 @@ exactly three lengths, the largest the sum of the other two
 \centering
 \begin{tikzpicture}[x=11cm,y=1cm]
   \draw[->] (-0.01,0) -- (1.05,0);
+  \draw (1,0.06)--(1,-0.06);
   \node[below] at (1,-0.07) {$1$};
   \fill (0,0) circle (1.3pt);
     \draw (0,0.06)--(0,-0.06);
@@ -622,9 +651,10 @@ $j=1<\mmi=2$, and indeed $v'=v+\etap+\etam=\tfrac37+\tfrac27+\tfrac17=\tfrac67$,
 realized at index $j+\mpl-\mmi=2$.  The missing midpoint is
 $v+\etap=\tfrac57$, and $\tfrac57\notin\orb(a,4)$ (Theorem~\ref{thm:L2}): it
 first appears at index $j+\mpl=4=N$, off the end.  The period argument is
-visible numerically---the minimal period here is $q=7$, while $\mpl+\mmi=5$, so
+visible numerically---the minimal period of the rotation here is $7$, while
+$\mpl+\mmi=5$, so
 there is no period $d$ at all in the window $(\mpl,\mpl+\mmi)=(3,5)$, and the
-collision that case~$k<j$ would require cannot occur.
+collision that case~$w<j$ would require cannot occur.
 
 % =====================================================================
 \section{The Lean 4 Formalization}\label{sec:lean}
@@ -643,10 +673,11 @@ first block builds the orbit, the sorted enumeration, the gap multiset and
 \code{gaps\_sum\_eq\_one}, and the distinct-count reduction
 \code{three\_gap\_card\_le\_three\_of\_subset}.  A second block introduces the
 positive points, the two returns $\etap,\etam$, and their minimality.  A third
-recovers the index structure (\code{mulFiber}, \code{canMul}, $\mpl$, $\mmi$) and
-proves the fractional-part shift identities.  Cases A and B occupy the
-forward and backward ``index-bridge'' blocks, ending in \code{gap\_eq\_etaPos}
-and \code{gap\_eq\_etaNeg}.  The final block is the corner: the discriminant
+recovers the index structure (\code{mulFiber}, \code{canMul}, $\mpl$) and
+proves the fractional-part shift identities.  Cases A and B occupy the forward
+and backward ``index-bridge'' blocks, in which $\mmi$ is also set up; they end
+in \code{gap\_eq\_etaPos} and \code{gap\_eq\_etaNeg}.  The final block is the
+corner: the discriminant
 \code{corner\_canMul\_lt\_mMinus}, the $M$-circle infrastructure
 (\code{orbit\_mono}, \code{etaPos\_eq\_extend}, \code{etaNeg\_eq\_extend}), the
 empty-gap lemmas \code{corner\_noPoint\_lo} and \code{corner\_noPoint\_hi}, the
@@ -679,6 +710,7 @@ their Lean names and line numbers in \code{ThreeGap.lean}.
 
 \begin{table}[ht]
 \centering
+\setlength{\tabcolsep}{4.5pt}
 \begin{tabular}{lll}
 \hline
 Paper & Lean declaration & line\\
@@ -704,7 +736,7 @@ L1, L3 (Lem.~\ref{lem:L1L3})        & \code{corner\_noPoint\_lo}, \code{corner\_
 Corner gap; L2 (Prop.~\ref{prop:corner}, Thm.~\ref{thm:L2}) & \code{corner\_gap} & 1272\\
 Classification                      & \code{neighbour\_gap\_in\_returns}        & 1428\\
 Main theorem (Thm.~\ref{thm:main})  & \code{three\_gap\_card\_le\_three}        & 1461\\
-Sum relation (\S\ref{subsec:example} text) & \code{three\_gap\_lengths\_eq}     & 1475\\
+Sum relation (\S\ref{subsec:assemble} text) & \code{three\_gap\_lengths\_eq}    & 1475\\
 \hline
 \end{tabular}
 \caption{Correspondence between the paper and \code{ThreeGap.lean}.}
@@ -714,7 +746,7 @@ Sum relation (\S\ref{subsec:example} text) & \code{three\_gap\_lengths\_eq}     
 \subsection{Scope of trust}
 
 What must one trust to accept Theorem~\ref{thm:main}?  Running
-\code{\#print axioms three\_gap\_card\_le\_three} reports
+\code{\#print axioms ThreeGap.three\_gap\_card\_le\_three} reports
 \[
   \code{[propext, Classical.choice, Quot.sound]} ,
 \]
@@ -756,10 +788,11 @@ holds for all~$a$.
 \emph{Dynamical and geometric proofs.}  Marklof and
 Str\"ombergsson~\cite{MarklofStrombergsson2017} derive the theorem from the
 geometry of the space of unimodular lattices, a viewpoint that also yields
-higher-dimensional generalizations.  Recent expositions give short geometric
-proofs through Farey fractions and lattice configurations~\cite{Geometric2023}.
-Berth\'e and Reutenauer~\cite{BertheReutenauer2024} survey the result and its
-links to Sturmian words and continued fractions.
+higher-dimensional generalizations.  A recent exposition gives a concise
+geometric proof through Farey pairs and mediants~\cite{Geometric2023}.
+Berth\'e and Reutenauer~\cite{BertheReutenauer2024} revisit the theorem from
+the word-combinatorial viewpoint, focusing on the finite words that encode the
+successive gap lengths.
 
 \emph{Formalization.}  The only prior formal proof we are aware of is
 Mayero's~\cite{Mayero2000}, carried out in Coq (now Rocq) and following van
@@ -783,11 +816,17 @@ the \code{Int.fract} form used here, and isolating the handful of general-purpos
 lemmas about \code{Int.fract} and sorted finite sets that the proof uses.
 
 \emph{Relation to the companion work.}  The orbit $\orb(a,N)$ studied here is,
-for rational $a=\alpha/\beta$, precisely the projected point set of a
-one-dimensional rational cut-and-project construction, whose gap sequence and
-its period---under both the multiset and set conventions---are the subject of a
-companion paper~\cite{Kunert2026}.  The three-gap theorem bounds the number of
-distinct gap \emph{lengths} appearing in a single window; the companion work
+for rational $a$, the same kind of projected point set as those produced by the
+one-dimensional rational cut-and-project construction whose gap sequence and
+period---under both the multiset and set conventions---are the subject of a
+companion paper~\cite{Kunert2026}.  The correspondence involves a change of
+rotation number: for slope $\alpha/\beta$ and window parameter $\omega$, one
+period window of the companion's projected point set is, after rescaling by
+$1/D$, a translate modulo~$1$ of the orbit $\orb(c/D,\,N')$ with
+$D=\alpha^2+\beta^2$, $c\equiv-\alpha^{-1}\beta\pmod D$, and
+$N'=\lfloor\omega\alpha\rfloor+\lfloor\omega\beta\rfloor+1$---not of
+$\orb(\alpha/\beta,\,\cdot\,)$ itself.  The three-gap theorem bounds the number
+of distinct gap \emph{lengths} appearing in a single window; the companion work
 quantifies how the gap \emph{sequence} repeats.  The two are complementary
 slices of the same elementary geometry, each formalized in its own public
 repository (\cite{Kunert2026}, \cite{KunertThreeGap2026}).
@@ -829,11 +868,12 @@ Val\'{e}rie Berth\'{e} and Christophe Reutenauer,
 \bibitem{Geometric2023}
 Tadahisa Hamada,
 ``A concise geometric proof of the three distance theorem,''
-preprint, 2023.
-arXiv:\href{https://arxiv.org/abs/2308.11999}{2308.11999}.
+preprint, arXiv:\href{https://arxiv.org/abs/2308.11999}{2308.11999}, 2023.
 
 \bibitem{Kunert2026}
 Dirk Kunert,
+``Period formulas for rational cut-and-project strip projections: multiset and
+set cases,'' companion paper with Lean~4 formalization, available in
 \emph{Repository cut-and-project}, version \texttt{v1.4-arxiv}, 2026.\newline
 Available at: \url{https://github.com/dkunert/cut-and-project/tree/v1.4-arxiv}.
 
@@ -850,6 +890,14 @@ Frank M.\ Liang,
 \textsc{doi}: \href{https://doi.org/10.1016/0012-365X(79)90140-7}%
 {10.1016/0012-365X(79)90140-7}.
 
+\bibitem{MarklofStrombergsson2017}
+Jens Marklof and Andreas Str\"{o}mbergsson,
+``The Three Gap Theorem and the Space of Lattices,''
+\emph{The American Mathematical Monthly}, vol.~124, no.~8, pp.~741--745,
+2017.
+\textsc{doi}: \href{https://doi.org/10.4169/amer.math.monthly.124.8.741}%
+{10.4169/amer.math.monthly.124.8.741}.
+
 \bibitem{Mathlib2020}
 The mathlib Community,
 ``The Lean mathematical library,''
@@ -858,14 +906,6 @@ Certified Programs and Proofs (CPP 2020)},
 pp.~367--381, 2020.
 \textsc{doi}: \href{https://doi.org/10.1145/3372885.3373824}%
 {10.1145/3372885.3373824}.
-
-\bibitem{MarklofStrombergsson2017}
-Jens Marklof and Andreas Str\"{o}mbergsson,
-``The Three Gap Theorem and the Space of Lattices,''
-\emph{The American Mathematical Monthly}, vol.~124, no.~8, pp.~741--745,
-2017.
-\textsc{doi}: \href{https://doi.org/10.4169/amer.math.monthly.124.8.741}%
-{10.4169/amer.math.monthly.124.8.741}.
 
 \bibitem{Mayero2000}
 Micaela Mayero,

@@ -24,8 +24,8 @@ The development, in order:
 * the two first returns `etaPos = η⁺`, `etaNeg = η⁻`, with minimality;
 * `three_gap_card_le_three_of_subset` — the reduction "gap values lie in a
   three-element set `⇒` at most three distinct gap lengths";
-* the multiplier layer (`canMul`, `fract_shift_eq`, `shift_mem_orbit`) and the
-  forward-neighbour upper bound `gap_le_etaPos`;
+* the multiplier layer (`canMul`, `mPlus`, `mMinus`) with the index-shift
+  identities (`fract_index_shift`) and the `noPointBetween` lemmas;
 * cases A (`gap_eq_etaPos`) and B (`gap_eq_etaNeg`) of the first-return
   classification, with the index-bridge infrastructure;
 * the **corner case** `η⁺ + η⁻` (`corner_gap`), via the M-circle (L1/L3) and an
@@ -410,7 +410,7 @@ theorem gapAt_zero_eq_etaPos (a : ℝ) {N : ℕ} (h2 : 2 ≤ orbitCard a N) :
   unfold gapAt
   rw [sortedVal_zero_eq_zero a hN, sortedVal_one_eq_etaPos a h2, sub_zero]
 
-/-- `η⁺` occurs as a gap value (step 2). -/
+/-- `η⁺` occurs as a gap value.  (API extra; not used by the main chain.) -/
 theorem etaPos_is_gap (a : ℝ) {N : ℕ} (h2 : 2 ≤ orbitCard a N) :
     etaPos a N ∈ gaps a N := by
   rw [mem_gaps_iff]
@@ -418,7 +418,7 @@ theorem etaPos_is_gap (a : ℝ) {N : ℕ} (h2 : 2 ≤ orbitCard a N) :
   refine ⟨0, ?_, gapAt_zero_eq_etaPos a h2⟩
   omega
 
-/-- `η⁻` occurs as a gap value (step 2). -/
+/-- `η⁻` occurs as a gap value.  (API extra; not used by the main chain.) -/
 theorem etaNeg_is_gap (a : ℝ) {N : ℕ} (h2 : 2 ≤ orbitCard a N) :
     etaNeg a N ∈ gaps a N := by
   rw [mem_gaps_iff]
@@ -443,7 +443,7 @@ theorem fract_add_fract_eq (x y : ℝ) :
     rotated value `Int.fract (Int.fract (u*a) + Int.fract (m*a))` is again an orbit
     point.  This is the half of the Slater closure that does not wrap past index
     `N`; the values that fall off the end (`u + m ≥ N`) are where the negative
-    return appears, handled by the first-return classification. -/
+    return appears.  (API extra; not used by the main chain.) -/
 theorem fract_rotate_mem (a : ℝ) (N : ℕ) {u m : ℕ} (hum : u + m < N) :
     Int.fract (Int.fract ((u : ℝ) * a) + Int.fract ((m : ℝ) * a)) ∈ orbit a N := by
   rw [fract_add_fract_eq]
@@ -456,7 +456,7 @@ theorem fract_rotate_mem (a : ℝ) (N : ℕ) {u m : ℕ} (hum : u + m < N) :
 The value-Finset `orbit` hides the index ("multiplier") behind each point.
 We recover a canonical multiplier and the forward value-shift; the discriminant
 of the three-gap dichotomy is the *Nat* condition `canMul + mp < N`.
-Place AFTER `fract_rotate_mem`, still inside `namespace ThreeGap`. -/
+-/
 
 /-- The finset of indices `< N` whose rotation value equals `p`. -/
 noncomputable def mulFiber (a : ℝ) (N : ℕ) (p : ℝ) : Finset ℕ :=
@@ -507,7 +507,7 @@ theorem exists_back_return_multiplier (a : ℝ) {N : ℕ} (h2 : 2 ≤ orbitCard 
 
 /-- **Value-shift identity.**  Rotating an orbit point `p` (canonical multiplier
     `u = canMul p`) by a return multiplier `mp` for `η⁺` lands on
-    `Int.fract (p + η⁺)`. -/
+    `Int.fract (p + η⁺)`.  (API extra; the main chain uses `fract_index_shift`.) -/
 theorem fract_shift_eq (a : ℝ) (N : ℕ) {p : ℝ} (hp : p ∈ orbit a N)
     {mp : ℕ} (hmpval : Int.fract ((mp : ℝ) * a) = etaPos a N) :
     Int.fract (((canMul a N p hp + mp : ℕ)) * a) = Int.fract (p + etaPos a N) := by
@@ -516,7 +516,7 @@ theorem fract_shift_eq (a : ℝ) (N : ℕ) {p : ℝ} (hp : p ∈ orbit a N)
   rw [hcast, ← fract_add_fract_eq, fract_canMul a N hp, hmpval]
 
 /-- **Forward shift lands in the orbit** when the multiplier stays in range
-    (`canMul p + mp < N`) and `p + η⁺ < 1` (no wrap): then `p + η⁺ ∈ orbit`. -/
+    (`canMul p + mp < N`) and `p + η⁺ < 1` (no wrap).  (API extra; unused.) -/
 theorem shift_mem_orbit (a : ℝ) (N : ℕ) {p : ℝ} (hp : p ∈ orbit a N)
     {mp : ℕ} (hmpval : Int.fract ((mp : ℝ) * a) = etaPos a N)
     (hrange : canMul a N p hp + mp < N)
@@ -527,12 +527,12 @@ theorem shift_mem_orbit (a : ℝ) (N : ℕ) {p : ℝ} (hp : p ∈ orbit a N)
     rw [fract_shift_eq a N hp hmpval, Int.fract_eq_self.mpr ⟨by linarith, hlt1⟩]
   exact (mem_orbit_iff a N _).mpr ⟨_, hrange, hval⟩
 
-/-! ### Forward-neighbour upper bound (the in-range half, proved) -/
+/-! ### Forward-neighbour upper bound (API extra — superseded by Case A below) -/
 
-/-- **Forward-neighbour upper bound (proved).**  Under the forward hypothesis `hfwd`, the
+/-- **Forward-neighbour upper bound.**  Under the forward hypothesis `hfwd`, the
     gap is at MOST `η⁺`: the orbit point `q := sortedVal i + η⁺` lies strictly above
     `sortedVal i` and `< 1`, so by `no_orbit_strictly_between` it cannot sit strictly
-    below `sortedVal (i+1)`; hence `sortedVal (i+1) ≤ q`, i.e. `gapAt i ≤ η⁺`. -/
+    below `sortedVal (i+1)`.  (API extra; superseded by `gap_eq_etaPos`.) -/
 theorem gap_le_etaPos (a : ℝ) {N : ℕ} (h2 : 2 ≤ orbitCard a N)
     {i : ℕ} (hi : i + 1 < orbitCard a N)
     (hfwd : sortedVal a N i + etaPos a N < 1 ∧ sortedVal a N i + etaPos a N ∈ orbit a N) :
@@ -552,7 +552,7 @@ Toward the first-return classification, recovering the index structure behind th
 orbit values.  The decisive discriminant is the index condition `j + m⁺ < N`, NOT
 the value condition `xⱼ + η⁺ ∈ orbit`: those differ (e.g. `α = 4/5, N = 4`, point
 `2/5` has `2/5 + η⁺ = 4/5 ∈ orbit` yet gap `= η⁻`, since its index is off-end).
-All lemmas in this section are fully proved. -/
+-/
 
 /-- Fractional-part subtraction identity (companion of `fract_add_fract_eq`). -/
 theorem fract_sub_fract_eq (x y : ℝ) :
@@ -564,7 +564,7 @@ theorem fract_sub_fract_eq (x y : ℝ) :
   rw [hx, hy]; push_cast; ring
 
 /-- Pure `Nat`/`Finset` counting seed: exactly `N - mp` indices keep their forward
-    `+mp` shift in range, so exactly `mp` fall off the end. -/
+    `+mp` shift in range, so exactly `mp` fall off the end.  (API extra; unused.) -/
 theorem forward_inRange_card {N mp : ℕ} (h : mp ≤ N) :
     (Finset.filter (fun j => j + mp < N) (Finset.range N)).card = N - mp := by
   have hset : Finset.filter (fun j => j + mp < N) (Finset.range N)
@@ -621,7 +621,7 @@ theorem sub_mem_orbit_of_index_le (a : ℝ) (N : ℕ) {j w : ℕ} (hjw : j ≤ w
 /-- **Difference extraction, `w < j` (dual).**  If the larger value `{w·a}` has the
     *smaller* index `w < j`, the complement `1 - ({w·a} - {j·a})` is an orbit point
     (`{(j-w)·a}`) in the top band `(1 - η⁺, 1)`.  Via `le_one_sub_etaNeg` this gives
-    `{w·a} - {j·a} ≥ η⁻`; the full contradiction is the open two-return descent. -/
+    `{w·a} - {j·a} ≥ η⁻`; used in the backward index-bridge toward Case B. -/
 theorem compl_mem_orbit_of_index_gt (a : ℝ) (N : ℕ) {j w : ℕ} (hwj : w < j) (hj : j < N)
     (hlt : Int.fract ((j : ℝ) * a) < Int.fract ((w : ℝ) * a)) :
     1 - (Int.fract ((w : ℝ) * a) - Int.fract ((j : ℝ) * a)) ∈ orbit a N := by
@@ -644,7 +644,7 @@ theorem compl_mem_orbit_of_index_gt (a : ℝ) (N : ℕ) {j w : ℕ} (hwj : w < j
   rw [← hfr]
   exact (mem_orbit_iff a N _).mpr ⟨j - w, hjw, rfl⟩
 
-/-! ## The forward (η⁺) case, fully proved -/
+/-! ## The forward (η⁺) case -/
 
 /-- Shifting an index by `m⁺` realises the rotation by `η⁺` at the value level:
     `{(j+m⁺)·a} = {{j·a} + η⁺}`. -/
@@ -1469,12 +1469,17 @@ theorem three_gap_card_le_three (a : ℝ) (N : ℕ) :
       _ ≤ 3 := by norm_num
 
 /-- **The sum relation.**  When the gaps take exactly three distinct lengths, those
-    lengths are precisely `η⁺`, `η⁻`, and `η⁺ + η⁻`; in particular the largest is the
-    sum of the other two.  Immediate from `gaps_subset_returns` and a cardinality
-    count, since the candidate set is the two returns together with their sum. -/
-theorem three_gap_lengths_eq (a : ℝ) {N : ℕ} (h2 : 2 ≤ orbitCard a N)
+    lengths are precisely `η⁺`, `η⁻`, and `η⁺ + η⁻`; in particular the largest,
+    `η⁺ + η⁻`, is the sum of the other two (they are positive: `etaPos_pos`,
+    `etaNeg_pos`).  The nondegeneracy `2 ≤ orbitCard` is derived from `h3`. -/
+theorem three_gap_lengths_eq (a : ℝ) {N : ℕ}
     (h3 : (gaps a N).toFinset.card = 3) :
     (gaps a N).toFinset = ({etaPos a N, etaNeg a N, etaPos a N + etaNeg a N} : Finset ℝ) := by
+  have h2 : 2 ≤ orbitCard a N := by
+    by_contra h
+    have hle := gaps_toFinset_card_le a N
+    rw [gaps_card_eq_one_of_degenerate a (by omega)] at hle
+    omega
   refine Finset.eq_of_subset_of_card_le (gaps_subset_returns a h2) ?_
   rw [h3]; exact Finset.card_le_three
 

@@ -5,7 +5,7 @@ A self-contained, machine-checked formalization of the **three-gap theorem**
 [Lean 4](https://leanprover.github.io/) on top of
 [Mathlib](https://github.com/leanprover-community/mathlib4).
 
-> **Theorem.** For every real number `a` and every `N ∈ ℕ`, the `N` points
+> **Theorem.** For every real number `a` and every `N ∈ ℕ`, the points
 > `{ i·a mod 1 : 0 ≤ i < N }` partition the half-open interval `[0,1)` into gaps
 > taking **at most three distinct lengths**; and when exactly three lengths
 > occur, the largest is the sum of the other two.
@@ -76,10 +76,12 @@ grep -c 'sorry' ThreeGap.lean   # 2 matches — both inside comments only
 
 ## Companion work
 
-The orbit `{ i·a mod 1 : i < N }` is, for rational `a = α/β`, exactly the
-projected point set of a one-dimensional rational cut-and-project construction.
-Its gap **sequence** and minimal period (under both the multiset and set
-conventions) are studied in a companion project:
+The orbit `{ i·a mod 1 : i < N }` is, for rational `a`, the same kind of
+projected point set as those produced by the one-dimensional rational
+cut-and-project construction of the companion project (the precise
+correspondence involves a change of rotation number; see the paragraph
+"Relation to the companion work" in Section 7 of this repository's paper).  Its gap **sequence** and minimal period (under both the multiset
+and set conventions) are studied there:
 <https://github.com/dkunert/cut-and-project>.
 
 ## Provenance
