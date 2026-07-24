@@ -78,10 +78,9 @@ grep -c 'sorry' ThreeGap.lean   # 2 matches — both inside comments only
 
 The orbit `{ i·a mod 1 : i < N }` is, for rational `a`, the same kind of
 projected point set as those produced by the one-dimensional rational
-cut-and-project construction of the companion project (the precise
-correspondence involves a change of rotation number; see the paragraph
-"Relation to the companion work" in Section 7 of this repository's paper).  Its gap **sequence** and minimal period (under both the multiset
-and set conventions) are studied there:
+cut-and-project construction of the companion project.  Its gap
+**sequence** and minimal period (under both the multiset and set
+conventions) are studied there:
 <https://github.com/dkunert/cut-and-project>.
 
 ## Provenance
