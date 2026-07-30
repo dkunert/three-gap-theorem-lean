@@ -23,10 +23,14 @@ axioms `propext`, `Classical.choice`, `Quot.sound` that underlie Mathlib itself.
 ## What is distinctive
 
 * **Uniform in the rotation number.** The same proof covers rational *and*
-  irrational `a`, with no case split. The only previous formalization
-  (Mayero's Coq development after van Ravenstein) is restricted to irrational
-  `a`. To our knowledge this is the first formalization of the theorem in
-  Lean 4.
+  irrational `a`, with no case split. The prior formalizations we are aware
+  of are all restricted to irrational `a`: Mayero's Coq development after
+  van Ravenstein, and independent Lean 4 developments, most notably one
+  proposed to
+  [Mathlib as PR #40037](https://github.com/leanprover-community/mathlib4/pull/40037)
+  but closed unmerged. To our knowledge this is the first formalization of
+  the theorem in Lean 4 to treat rational and irrational `a` uniformly, and
+  the theorem remains absent from Mathlib (as of July 2026).
 * **First-return route.** The proof works in `[0,1)` via `Int.fract` (not
   `AddCircle`), through the two return times `η⁺`, `η⁻`. The hard "corner"
   case—that the longest gap is empty—is closed by a self-contained

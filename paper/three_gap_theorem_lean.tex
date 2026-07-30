@@ -60,7 +60,7 @@
 Lean~4 formalization, machine-checked proof, interactive theorem proving,
 Mathlib, first-return map, fractional parts, gap sequences, rotation}
 
-\date{June 22, 2026}
+\date{July 30, 2026}
 
 \begin{document}
 
@@ -72,10 +72,12 @@ gaps taking at most three distinct lengths, and when there are exactly three
 the largest is the sum of the other two.  The formalization follows the
 first-return (Slater--van Ravenstein) route, working throughout in $[0,1)$
 via \code{Int.fract} rather than \code{AddCircle}.  To our knowledge this is
-the first formalization of the theorem in Lean~4, and the first in any system
-to treat rational and irrational~$a$ uniformly: the only previous formal
-proof---Mayero's Coq development after van Ravenstein---is restricted to
-irrational~$a$.  The geometric crux, that the longest gap contains no orbit
+the first machine-checked proof of the theorem---in any system---valid
+uniformly for rational and irrational~$a$, and the theorem remains absent
+from Mathlib at the time of writing: the prior formal proofs we are aware
+of---Mayero's Coq development after van Ravenstein, and recent independent
+Lean~4 developments, one of them proposed to Mathlib but closed
+unmerged---are all restricted to irrational~$a$.  The geometric crux, that the longest gap contains no orbit
 point, is discharged in the corner case by interval arguments together with a
 self-contained return-index/period argument for the critical midpoint: were
 the midpoint an orbit point, the two
@@ -151,10 +153,14 @@ in its interior.  This emptiness is the geometric heart of the theorem.
 A noteworthy feature of the formalization is that it is \emph{uniform in~$a$}:
 the same proof covers rational and irrational rotation numbers, with no case
 split.  This is not automatic for the first-return route.  Van Ravenstein's
-proof, and the only previous formalization of the theorem---Mayero's Coq
-development~\cite{Mayero2000}, which follows van Ravenstein---assume $a$
-irrational, so that distinct indices always give distinct points; the rational
-case, where the orbit is periodic and indices collide, is set aside.  We close
+proof assumes $a$ irrational, so that distinct indices always give distinct
+points; the rational case, where the orbit is periodic and indices collide,
+is set aside.  The prior formalizations of the theorem we are aware of all
+inherit such an irrationality hypothesis: Mayero's Coq
+development~\cite{Mayero2000}, which follows van Ravenstein, and recent
+independent Lean~4 developments---most notably one proposed to Mathlib but
+closed unmerged~\cite{SaarShai2026}, which follows Liang's rigid-gap
+argument yet likewise assumes $a$ irrational.  We close
 the corner case for all~$a$ at once.  The collision of two indices on the same
 orbit point is exactly a \emph{period} of the rotation, and we show that in the
 corner such a period would lie strictly between the positive return index and
@@ -164,9 +170,13 @@ supplies precisely the step that the van Ravenstein--Mayero line omits.
 
 \subsection*{What we do and do not claim}
 We make a deliberately narrow claim.  To our knowledge this is the first
-formalization of the three-gap theorem in Lean~4---the theorem is absent from
-Mathlib at the time of writing---and the first machine-checked proof, in any
-system, valid uniformly for rational and irrational~$a$.  We do \emph{not}
+formalization of the three-gap theorem in Lean~4 valid uniformly for
+rational and irrational~$a$---indeed the first machine-checked proof, in
+any system, with this uniformity.  The theorem remains absent from Mathlib
+at the time of writing, and the other Lean~4 formalizations we are aware
+of, most notably one proposed to Mathlib but closed
+unmerged~\cite{SaarShai2026}, are restricted, like Mayero's, to
+irrational~$a$.  We do \emph{not}
 claim a new proof of the theorem itself.  Elementary proofs valid for
 all~$a$ have long been available: Liang's $1979$ ``rigid gap''
 argument~\cite{Liang1979}, for instance, is uniform and self-contained.  We
@@ -794,12 +804,16 @@ Berth\'e and Reutenauer~\cite{BertheReutenauer2024} revisit the theorem from
 the word-combinatorial viewpoint, focusing on the finite words that encode the
 successive gap lengths.
 
-\emph{Formalization.}  The only prior formal proof we are aware of is
+\emph{Formalization.}  The prior formal proofs we are aware of are all
+restricted to irrational rotation numbers.  The earliest is
 Mayero's~\cite{Mayero2000}, carried out in Coq (now Rocq) and following van
-Ravenstein; like its model it is restricted to irrational rotation numbers.  At
-the time of writing the theorem is absent from Mathlib, and we know of no Lean
-or Isabelle formalization.  Our development is therefore, to our knowledge, the
-first in Lean~4 and the first machine-checked proof---in any system---valid
+Ravenstein.  In 2026, independent Lean~4 formalizations of the irrational
+case appeared, most notably one proposed to Mathlib as pull request
+\#40037~\cite{SaarShai2026}, which was closed without being
+merged.  At the time of writing the
+theorem is therefore absent from Mathlib, and we know of no Isabelle
+formalization.  Our development is, to our knowledge, the first
+machine-checked proof---in any system---valid
 uniformly for rational and irrational~$a$.  Its place in the landscape is
 narrow and concrete: a machine-checked rendering of the first-return proof,
 made uniform.
@@ -810,7 +824,8 @@ made uniform.
 
 \emph{Towards Mathlib.}  Because the three-gap theorem is a named classical
 result still missing from Mathlib, a natural next step is to distil the module
-into a library contribution.  Two adaptations would help: phrasing the statement
+into a library contribution (subject to Mathlib's contribution
+guidelines).  Two adaptations would help: phrasing the statement
 over \code{AddCircle} (the library's preferred model of $\R/\Z$) in addition to
 the \code{Int.fract} form used here, and isolating the handful of general-purpose
 lemmas about \code{Int.fract} and sorted finite sets that the proof uses.
@@ -919,6 +934,14 @@ Deduction (CADE-28)},
 LNAI, vol.~12699, pp.~625--635, Springer, 2021.
 \textsc{doi}: \href{https://doi.org/10.1007/978-3-030-79876-5_37}%
 {10.1007/978-3-030-79876-5\_37}.
+
+\bibitem{SaarShai2026}
+Saar Shai,
+``feat(NumberTheory): the three-gap (Steinhaus) theorem,''
+pull request \#40037, \emph{leanprover-community/mathlib4}, opened 30~May
+2026, closed unmerged 9~June 2026.\newline
+Available at:
+\url{https://github.com/leanprover-community/mathlib4/pull/40037}.
 
 \bibitem{Slater1967}
 Noel B.\ Slater,
