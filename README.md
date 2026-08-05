@@ -23,23 +23,28 @@ axioms `propext`, `Classical.choice`, `Quot.sound` that underlie Mathlib itself.
 ## What is distinctive
 
 * **Uniform in the rotation number.** The same proof covers rational *and*
-  irrational `a`, with no case split. The prior formalizations we are aware
-  of are all restricted to irrational `a`: Mayero's Coq development after
-  van Ravenstein, and independent Lean 4 developments, most notably one
+  irrational `a`, with no case split. Every prior formalization we found is
+  restricted to irrational `a`: Mayero's Coq development after
+  van Ravenstein, and two independent Lean 4 developments of 2026, one of them
   proposed to
   [Mathlib as PR #40037](https://github.com/leanprover-community/mathlib4/pull/40037)
-  but closed unmerged. To our knowledge this is the first formalization of
-  the theorem in Lean 4 to treat rational and irrational `a` uniformly, and
-  the theorem remains absent from Mathlib (as of July 2026).
+  but closed unmerged. Having searched Mathlib and the mathlib4 pull requests,
+  the Archive of Formal Proofs, the Coq/Rocq contribution archive, Metamath,
+  HOL Light, HOL4, Mizar and the Lean Zulip archive (all as of 4 August 2026),
+  we found no earlier machine-checked formalization valid for an arbitrary
+  **real** rotation number, and the theorem remains absent from Mathlib. This
+  is a search result, not a claim that none exists — and it is not a priority
+  claim for the formalization as such, since PR #40037 precedes this work by
+  four weeks.
 * **First-return route.** The proof works in `[0,1)` via `Int.fract` (not
   `AddCircle`), through the two return times `η⁺`, `η⁻`. The hard "corner"
   case—that the longest gap is empty—is closed by a self-contained
   return-time/period argument that removes the irrationality restriction.
 
-This is **not** a new mathematical proof of the theorem; elementary proofs valid
-for all `a` are classical (e.g. Liang's 1979 rigid-gap argument). The
-contribution is the machine-checked formalization. See the companion paper for
-the full discussion of prior work.
+This is **not** a new mathematical proof of the theorem; the uniform statement
+is classical, and the rational case has been treated explicitly in the
+literature. The contribution is the machine-checked formalization. See the
+companion paper for the full discussion of prior work.
 
 ## The paper
 

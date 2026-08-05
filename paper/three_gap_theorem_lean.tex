@@ -71,13 +71,15 @@ $\{ia \bmod 1 : 0 \le i < N\}$ partitions the half-open interval $[0,1)$ into
 gaps taking at most three distinct lengths, and when there are exactly three
 the largest is the sum of the other two.  The formalization follows the
 first-return (Slater--van Ravenstein) route, working throughout in $[0,1)$
-via \code{Int.fract} rather than \code{AddCircle}.  To our knowledge this is
-the first machine-checked proof of the theorem---in any system---valid
-uniformly for rational and irrational~$a$, and the theorem remains absent
-from Mathlib at the time of writing: the prior formal proofs we are aware
-of---Mayero's Coq development after van Ravenstein, and recent independent
-Lean~4 developments, one of them proposed to Mathlib but closed
-unmerged---are all restricted to irrational~$a$.  The geometric crux, that the longest gap contains no orbit
+via \code{Int.fract} rather than \code{AddCircle}.  Having searched Mathlib,
+the Archive of Formal Proofs, the Coq/Rocq contribution archive, Metamath,
+HOL~Light, HOL4, Mizar and the Lean Zulip archive, we have found no earlier
+machine-checked formalization of the theorem valid for an arbitrary
+\emph{real} rotation number: the prior formal proofs we found---Mayero's Coq
+development after van Ravenstein, and two independent Lean~4 developments of
+2026, one of them proposed to Mathlib but closed unmerged---all carry an
+irrationality hypothesis, and the theorem remains absent from Mathlib at the
+time of writing.  The geometric crux, that the longest gap contains no orbit
 point, is discharged in the corner case by interval arguments together with a
 self-contained return-index/period argument for the critical midpoint: were
 the midpoint an orbit point, the two
@@ -90,8 +92,8 @@ hypothesis of the van Ravenstein--Mayero line.  Both the distinct-count bound
 no \code{sorry}, depending only on
 the axioms \code{propext}, \code{Classical.choice}, \code{Quot.sound}; the
 development is about $1{,}480$ lines.  We do \emph{not} claim a new proof
-of the theorem: elementary proofs valid for all~$a$ are classical---for
-instance Liang's $1979$ rigid-gap argument---and our contribution is the
+of the theorem: the uniform statement is classical, and the rational case has
+been treated explicitly in the literature.  Our contribution is the
 machine-checked formalization together with the formalization-friendly corner
 argument that makes the first-return route uniform.
 \end{abstract}
@@ -155,12 +157,15 @@ the same proof covers rational and irrational rotation numbers, with no case
 split.  This is not automatic for the first-return route.  Van Ravenstein's
 proof assumes $a$ irrational, so that distinct indices always give distinct
 points; the rational case, where the orbit is periodic and indices collide,
-is set aside.  The prior formalizations of the theorem we are aware of all
-inherit such an irrationality hypothesis: Mayero's Coq
-development~\cite{Mayero2000}, which follows van Ravenstein, and recent
-independent Lean~4 developments---most notably one proposed to Mathlib but
-closed unmerged~\cite{SaarShai2026}, which follows Liang's rigid-gap
-argument yet likewise assumes $a$ irrational.  We close
+is set aside.  The prior formalizations we found all inherit such an
+irrationality hypothesis, and in each of them it is load-bearing rather than
+decorative.  In Mayero's Coq development~\cite{Mayero2000,MayeroCoq1998},
+which follows van Ravenstein, the section containing the main theorem opens
+with the hypothesis $\alpha p \ne n$ for all integers $n,p$, and that
+hypothesis is threaded through the development some seventy-six times.  In the
+Lean~4 pull request proposed to Mathlib but closed
+unmerged~\cite{SaarShai2026} it sits already in the \emph{definition} of the
+gap function, so that the uniform statement cannot even be phrased there.  We close
 the corner case for all~$a$ at once.  The collision of two indices on the same
 orbit point is exactly a \emph{period} of the rotation, and we show that in the
 corner such a period would lie strictly between the positive return index and
@@ -169,17 +174,30 @@ the argument specializes to the classical situation; for rational~$a$ it
 supplies precisely the step that the van Ravenstein--Mayero line omits.
 
 \subsection*{What we do and do not claim}
-We make a deliberately narrow claim.  To our knowledge this is the first
-formalization of the three-gap theorem in Lean~4 valid uniformly for
-rational and irrational~$a$---indeed the first machine-checked proof, in
-any system, with this uniformity.  The theorem remains absent from Mathlib
-at the time of writing, and the other Lean~4 formalizations we are aware
-of, most notably one proposed to Mathlib but closed
-unmerged~\cite{SaarShai2026}, are restricted, like Mayero's, to
-irrational~$a$.  We do \emph{not}
-claim a new proof of the theorem itself.  Elementary proofs valid for
-all~$a$ have long been available: Liang's $1979$ ``rigid gap''
-argument~\cite{Liang1979}, for instance, is uniform and self-contained.  We
+We make a deliberately narrow claim, and we state it as what it is: a search
+result, not a theorem about the literature.  Having searched Mathlib master
+and the mathlib4 pull requests, the Archive of Formal Proofs, the Coq/Rocq
+contribution archive, Metamath, HOL~Light, HOL4, Mizar and the Lean Zulip
+archive (all as of $4$~August~$2026$), we have found no earlier
+machine-checked formalization of the three-gap theorem valid for an arbitrary
+\emph{real} rotation number, that is, without an irrationality hypothesis
+on~$a$ or an equivalent restriction.\footnote{The qualification
+``real'' is deliberate.  A machine-checked three-gap statement without an
+irrationality hypothesis does exist, but only as a decidable instance on a
+fixed finite cyclic group: a Lean file in an unrelated music-theory
+repository~\cite{MusicMath2026} bounds the number of distinct step sizes on
+$\Z/12\Z$ by three, proved by exhausting the twelve generators.  It
+quantifies over no real~$a$, covers no irrational rotation number at all, and
+the file containing it was committed on $27$~June~$2026$, after the first
+commit of the present development ($24$~June~$2026$).  We note that the
+repository itself was created two days before ours, so that a comparison of
+repository dates alone would be misleading.}  Every earlier formalization we
+found carries such a hypothesis.  We do \emph{not} claim priority for the
+formalization as such: the Mathlib pull request~\cite{SaarShai2026} precedes
+this development by four weeks.  We do \emph{not}
+claim a new proof of the theorem itself; elementary proofs valid for
+all~$a$ have long been available, and the rational case has been treated
+explicitly in the literature~\cite{AlessandriBerthe1998}.  We
 survey the proof landscape, including the dynamical and geometric proofs, in
 Section~\ref{sec:related}.  The minimality of the two returns is, moreover,
 the engine of every proof in the first-return family.  Our contribution is the
@@ -780,9 +798,12 @@ landscape is essential for stating our contribution honestly.
 $1950$s by S\'os~\cite{Sos1958}, Sur\'anyi~\cite{Suranyi1958}, and
 \'Swierczkowski~\cite{Swierczkowski1959}, by elementary number-theoretic and
 combinatorial means.  Liang~\cite{Liang1979} later gave a famously short
-``rigid gap'' proof.  We stress that Liang's argument is already \emph{uniform}:
-it applies verbatim to every rotation number, rational or irrational, with no
-case split.  Thus uniformity is not by itself a new feature of any proof, and we
+``rigid gap'' proof of the $3d$ distance theorem, of which the three-gap
+theorem is the case $d=1$.  We claim no new mathematics and, in particular, no
+new proof: the uniform statement is classical, and the rational case has been
+treated explicitly in the literature---S\'os and Slater both address it, as
+recorded in the survey of Alessandri and Berth\'e~\cite{AlessandriBerthe1998}.
+Uniformity is thus not by itself a new feature of any proof, and we
 make no such claim; we claim only a uniform \emph{formalization} via the
 first-return route.
 
@@ -804,17 +825,34 @@ Berth\'e and Reutenauer~\cite{BertheReutenauer2024} revisit the theorem from
 the word-combinatorial viewpoint, focusing on the finite words that encode the
 successive gap lengths.
 
-\emph{Formalization.}  The prior formal proofs we are aware of are all
-restricted to irrational rotation numbers.  The earliest is
-Mayero's~\cite{Mayero2000}, carried out in Coq (now Rocq) and following van
-Ravenstein.  In 2026, independent Lean~4 formalizations of the irrational
-case appeared, most notably one proposed to Mathlib as pull request
-\#40037~\cite{SaarShai2026}, which was closed without being
-merged.  At the time of writing the
-theorem is therefore absent from Mathlib, and we know of no Isabelle
-formalization.  Our development is, to our knowledge, the first
-machine-checked proof---in any system---valid
-uniformly for rational and irrational~$a$.  Its place in the landscape is
+\emph{Formalization.}  Every machine-checked treatment of the theorem we have
+been able to find states it only for irrational rotation numbers.  The
+earliest is Mayero's~\cite{Mayero2000}, carried out in Coq (now Rocq) after
+van Ravenstein.  There the hypothesis is explicit in the source of the
+development itself~\cite{MayeroCoq1998}: the section containing the main
+theorem \code{three\_gap} opens by assuming $\alpha p \ne n$ for all
+integers $n,p$, and the assumption recurs some seventy-six times across the
+four files.  Mayero is candid about the restriction, omitting the rational
+case because ``most of the intermediate results are false for alpha
+rational,'' and closing with the remark that ``in our proof it should be
+supposed that alpha is rational or not and we do not see, so far how to avoid
+this distinction.''  In 2026 two independent Lean~4 developments of the
+irrational case appeared.  In the first, proposed to Mathlib as pull
+request \#40037~\cite{SaarShai2026} and closed unmerged on
+contribution-policy rather than mathematical grounds, the hypothesis is
+structural rather than incidental: the gap function itself carries it, so
+that the uniform statement cannot be phrased there at all.  In the
+second~\cite{LeanGenius2026} the gap definitions are hypothesis-free, but all
+three main theorems still assume that~$a$ is irrational; the file also
+records that its build verification was still pending.  Neither proves a
+counterpart of the sum relation \code{three\_gap\_lengths\_eq}.  As of
+$4$~August~$2026$ the theorem is absent from Mathlib---whose \code{Steinhaus}
+lemmas concern the Banach--Steinhaus theorem and the measure-theoretic
+Steinhaus theorem, not this one---and the Archive of Formal Proofs contains
+no Isabelle formalization; searches of Metamath, HOL~Light, HOL4, Mizar, the
+Coq/Rocq contribution archive and the Lean Zulip archive turned up nothing
+further.  We therefore know of no earlier machine-checked statement of the
+theorem for an arbitrary real rotation number.  Its place in the landscape is
 narrow and concrete: a machine-checked rendering of the first-return proof,
 made uniform.
 
@@ -867,6 +905,12 @@ text.
 \begin{thebibliography}{99}
 % =====================================================================
 
+\bibitem{AlessandriBerthe1998}
+Pascal Alessandri and Val\'{e}rie Berth\'{e},
+``Three distance theorems and combinatorics on words,''
+\emph{L'Enseignement Math\'{e}matique}, series~2, vol.~44, no.~1--2,
+pp.~103--132, 1998.
+
 \bibitem{BertheReutenauer2024}
 Val\'{e}rie Berth\'{e} and Christophe Reutenauer,
 ``On the Three-Distance Theorem,''
@@ -892,6 +936,12 @@ Dirk Kunert,
 Rotation Number,''
 \emph{Repository three-gap-theorem-lean}, 2026.\newline
 Available at: \url{https://github.com/dkunert/three-gap-theorem-lean}.
+
+\bibitem{LeanGenius2026}
+Robert Walters and contributors,
+``\code{Erdos998ThreeGapOQ04.lean},'' in
+\emph{Repository lean-genius}, June~2026.\newline
+Available at: \url{https://github.com/rjwalters/lean-genius}.
 
 \bibitem{Liang1979}
 Frank M.\ Liang,
@@ -926,6 +976,12 @@ Also available as arXiv:\href{https://arxiv.org/abs/cs/0609124}{cs/0609124}.
 \textsc{doi}: \href{https://doi.org/10.1007/3-540-44557-9_10}%
 {10.1007/3-540-44557-9\_10}.
 
+\bibitem{MayeroCoq1998}
+Micaela Mayero,
+``ThreeGap: a proof of the three gap theorem (Steinhaus conjecture),''
+Coq contribution, INRIA Rocquencourt, September~1998; archived at
+\url{https://github.com/coq-contribs/three-gap} (file \code{three\_gap.v}).
+
 \bibitem{Moura2021}
 Leonardo de Moura and Sebastian Ullrich,
 ``The Lean~4 theorem prover and programming language,''
@@ -934,6 +990,13 @@ Deduction (CADE-28)},
 LNAI, vol.~12699, pp.~625--635, Springer, 2021.
 \textsc{doi}: \href{https://doi.org/10.1007/978-3-030-79876-5_37}%
 {10.1007/978-3-030-79876-5\_37}.
+
+\bibitem{MusicMath2026}
+Carles Mar\'{\i}n Mu\~{n}oz,
+``\code{DiatonicScale.lean},''
+\emph{Repository music-math}, commit of $27$~June~2026.\newline
+Available at:
+\url{https://github.com/karlesmarin/music-math/blob/main/lean/DiatonicScale.lean}.
 
 \bibitem{SaarShai2026}
 Saar Shai,
