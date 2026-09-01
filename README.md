@@ -83,6 +83,19 @@ and there is no `sorry` in the file:
 grep -c 'sorry' ThreeGap.lean   # 2 matches — both inside comments only
 ```
 
+## Upstreamed to Mathlib
+
+The two fractional-part absorption identities the proof relies on
+(`fract_add_fract_eq`, `fract_sub_fract_eq`) have been generalized and merged
+into Mathlib via
+[PR #42080](https://github.com/leanprover-community/mathlib4/pull/42080)
+(merged 31 August 2026): the four one-sided `@[simp]` lemmas
+`Int.fract_fract_add`, `Int.fract_add_fract`, `Int.fract_fract_sub`,
+`Int.fract_sub_fract` plus the two-sided corollaries
+`Int.fract_fract_add_fract` and `Int.fract_fract_sub_fract`, in
+`Mathlib.Algebra.Order.Floor.Ring`. This module pins a pre-merge Mathlib
+version and therefore keeps its local proofs.
+
 ## Companion work
 
 The orbit `{ i·a mod 1 : i < N }` is, for rational `a`, the same kind of

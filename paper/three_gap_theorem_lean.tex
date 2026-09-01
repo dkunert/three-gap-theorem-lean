@@ -60,7 +60,7 @@
 Lean~4 formalization, machine-checked proof, interactive theorem proving,
 Mathlib, first-return map, fractional parts, gap sequences, rotation}
 
-\date{July 30, 2026}
+\date{September 1, 2026}
 
 \begin{document}
 
@@ -217,8 +217,8 @@ worked rational example.  Section~\ref{sec:lean} describes the Lean
 development---its architecture, design choices, a correspondence table between
 the paper and the formal text, and the scope of trust.
 Section~\ref{sec:related} surveys the known proofs and locates ours among
-them, and Section~\ref{sec:discussion} discusses a possible Mathlib
-contribution and further directions.
+them, and Section~\ref{sec:discussion} discusses a Mathlib
+contribution---in part already merged---and further directions.
 
 % =====================================================================
 \section{Orbit, Gaps, and the Two First Returns}\label{sec:setup}
@@ -369,7 +369,12 @@ Thus $\fract{\mpl a}=\etap$ and $\fract{\mmi a}=1-\etam=\max\orb(a,N)$, with
 $0<\mpl<N$ and $\mmi<N$ (\code{mPlus\_lt}, \code{mMinus\_lt},
 \code{mPlus\_pos}).  Adding a return index rotates a point by the corresponding
 return, as recorded by the fractional-part identity $\fract{\fract{x}+\fract{y}}
-=\fract{x+y}$ (\code{fract\_add\_fract\_eq}):
+=\fract{x+y}$
+(\code{fract\_add\_fract\_eq})\footnote{Since the merge of mathlib4 pull
+request~\#42080~\cite{KunertMathlib2026} ($31$~August~$2026$) this identity
+and its subtraction companion \code{fract\_sub\_fract\_eq} are available in
+Mathlib as \code{Int.fract\_fract\_add\_fract} and its \code{sub} analogue;
+see Section~\ref{sec:discussion}.}:
 
 \begin{lemma}[\code{fract\_index\_shift}, \code{fract\_index\_shift\_noWrap}]
 \label{lem:shift}
@@ -867,6 +872,20 @@ guidelines).  Two adaptations would help: phrasing the statement
 over \code{AddCircle} (the library's preferred model of $\R/\Z$) in addition to
 the \code{Int.fract} form used here, and isolating the handful of general-purpose
 lemmas about \code{Int.fract} and sorted finite sets that the proof uses.
+For the \code{Int.fract} half this has meanwhile happened: the absorption
+lemmas behind the identity $\fract{\fract{x}+\fract{y}}=\fract{x+y}$ of
+Section~\ref{sec:setup} were contributed to Mathlib as pull
+request~\#42080~\cite{KunertMathlib2026}, merged into Mathlib master on
+$31$~August~$2026$.  Mathlib now carries the four one-sided \code{@[simp]}
+lemmas \code{Int.fract\_fract\_add}, \code{Int.fract\_add\_fract},
+\code{Int.fract\_fract\_sub}, \code{Int.fract\_sub\_fract} and the two-sided
+corollaries \code{Int.fract\_fract\_add\_fract} and
+\code{Int.fract\_fract\_sub\_fract} (in
+\code{Mathlib.Algebra.Order.Floor.Ring}), stated for any linearly ordered
+ring with a floor structure; they generalize this module's
+\code{fract\_add\_fract\_eq} and \code{fract\_sub\_fract\_eq} from~$\R$.
+The module itself still compiles against its pinned pre-merge Mathlib
+version and therefore retains its local proofs.
 
 \emph{Relation to the companion work.}  The orbit $\orb(a,N)$ studied here is,
 for rational $a$, the same kind of projected point set as those produced by the
@@ -899,7 +918,9 @@ the main result rests not on this division of labour but on the Lean~4 kernel:
 depend only on Mathlib's three foundational axioms (Section~\ref{sec:lean}), and
 the complete source is public~\cite{KunertThreeGap2026}, so any reader can reproduce the
 verification independently.  The author takes full responsibility for the final
-text.
+text.  The one-sided formulation of the \code{Int.fract} absorption lemmas that
+were upstreamed to Mathlib (Section~\ref{sec:discussion}) follows a suggestion
+by Eric Wieser.
 
 % =====================================================================
 \begin{thebibliography}{99}
@@ -928,6 +949,15 @@ Dirk Kunert,
 Multiset and Set Cases,'' with Lean~4 formalization,
 \emph{Repository cut-and-project}, version \texttt{v1.5-arxiv}, 2026.\newline
 Available at: \url{https://github.com/dkunert/cut-and-project/tree/v1.5-arxiv}.
+
+\bibitem{KunertMathlib2026}
+Dirk Kunert,
+``feat(Algebra/Order/Floor): add fract-absorption lemmas for sums and
+differences,''
+pull request \#42080, \emph{leanprover-community/mathlib4}, opened 25~July
+2026, merged 31~August 2026.\newline
+Available at:
+\url{https://github.com/leanprover-community/mathlib4/pull/42080}.
 
 \bibitem{KunertThreeGap2026}
 Dirk Kunert,
